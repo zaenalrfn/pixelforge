@@ -1,6 +1,4 @@
 export const generateImage = async (prompt: string): Promise<string> => {
-  // Use Vercel Serverless Function in production, or fallback to vite proxy in local
-  // Since we created api/generate.ts, the frontend always calls that.
   const url = import.meta.env.DEV ? '/api/dev-proxy' : '/api/generate';
 
   try {

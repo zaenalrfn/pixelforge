@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api\/dev-proxy/, ''),
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
-              const apiKey = env.VITE_API_KEY;
+            const apiKey = env.API_KEY || env.VITE_API_KEY;
               if (apiKey) {
                 proxyReq.setHeader('Authorization', `Bearer ${apiKey}`);
               }

@@ -1,9 +1,8 @@
 export const config = {
-  runtime: 'edge', // Using Edge runtime for fast, globally distributed execution
+  runtime: 'edge', 
 };
 
 export default async function handler(request: Request) {
-  // Only allow POST
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
       status: 405,
@@ -21,10 +20,8 @@ export default async function handler(request: Request) {
       });
     }
 
-    // Read the secret API Key from Vercel's Environment Variables
     const API_KEY = process.env.API_KEY || '';
 
-    // Forward the request to your Cloudflare Worker securely
     const cfResponse = await fetch('https://api-image.zaofficial24.workers.dev/', {
       method: 'POST',
       headers: {
@@ -34,7 +31,6 @@ export default async function handler(request: Request) {
       body: JSON.stringify({ prompt }),
     });
 
-    // If Cloudflare returns an error (like 429 Rate Limit)
     if (!cfResponse.ok) {
       const contentType = cfResponse.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
@@ -52,7 +48,6 @@ export default async function handler(request: Request) {
       }
     }
 
-    // Forward the successful image response back to the frontend
     const imageBlob = await cfResponse.blob();
     return new Response(imageBlob, {
       headers: {
