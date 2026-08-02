@@ -99,54 +99,63 @@
     </section>
 
     <!-- Ad Modal Overlay -->
-    <transition name="fade">
-      <div v-if="showAdModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
-        <div class="bg-surface-container border border-outline-variant rounded-xl p-6 max-w-2xl w-full flex flex-col items-center gap-6 relative shadow-[0_0_30px_rgba(0,0,0,0.8)] my-auto">
-          <header class="w-full text-center space-y-2">
-            <h3 class="text-2xl font-headline font-bold text-on-surface">Dukung Kami</h3>
-            <p class="text-sm text-on-surface-variant">Tautan unduhan Anda sedang disiapkan...</p>
-          </header>
-          
-          <!-- Ad Containers Grid -->
-          <div class="w-full flex flex-wrap justify-center items-center gap-4">
-            <!-- Iklan 1: 300x250 -->
-            <AdsterraBanner adKey="1e762b0ac65e443dbd2b5e6a57cd9708" :width="300" :height="250" />
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showAdModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+          <div class="bg-surface-container border border-outline-variant rounded-xl p-6 max-w-2xl w-full flex flex-col items-center gap-6 relative shadow-[0_0_30px_rgba(0,0,0,0.8)] my-auto">
+            <header class="w-full text-center space-y-2">
+              <h3 class="text-2xl font-headline font-bold text-on-surface">Dukung Kami</h3>
+              <p class="text-sm text-on-surface-variant">Tautan unduhan Anda sedang disiapkan...</p>
+            </header>
             
-            <!-- Iklan 2: 160x300 -->
-            <AdsterraBanner adKey="7c8c1da97381ba2540a7c376eb5deec3" :width="160" :height="300" />
-          </div>
+            <!-- Ad Containers Grid -->
+            <div class="w-full flex flex-wrap justify-center items-center gap-4">
+              <!-- Iklan 1: 300x250 -->
+              <AdsterraBanner adKey="1e762b0ac65e443dbd2b5e6a57cd9708" :width="300" :height="250" />
+              
+              <!-- Iklan 2: 160x300 -->
+              <AdsterraBanner adKey="7c8c1da97381ba2540a7c376eb5deec3" :width="160" :height="300" />
+            </div>
 
-          <!-- Iklan 3: Native Script -->
-          <div ref="adContainer" class="w-full min-h-[50px] bg-surface-dim rounded-lg flex items-center justify-center overflow-hidden border border-outline-variant/50 relative">
-            <span v-if="!countdown" class="absolute text-on-surface-variant/30 font-label text-xs">Memuat Iklan Tambahan...</span>
-          </div>
+            <!-- Iklan 3: Native Script (Confined in Iframe) -->
+            <div class="w-full min-h-[60px] bg-surface-dim rounded-lg flex items-center justify-center overflow-hidden border border-outline-variant/50 relative">
+              <span v-if="!countdown" class="absolute text-on-surface-variant/30 font-label text-xs z-0">Memuat Iklan Tambahan...</span>
+              <iframe 
+                class="relative z-10"
+                width="100%" 
+                height="60" 
+                frameborder="0" 
+                scrolling="no"
+                srcdoc="<html><body style='margin:0;display:flex;justify-content:center;align-items:center;'><script src='https://pl30643113.effectivecpmnetwork.com/86/a9/12/86a912ebbf89badc73e903d0d182c43a.js'></script></body></html>"
+              ></iframe>
+            </div>
 
-          <button
-            :disabled="countdown > 0"
-            @click="downloadImage"
-            class="w-full py-4 px-6 bg-primary rounded-lg text-on-primary font-headline font-bold uppercase tracking-wider transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary-fixed hover:shadow-[0_0_16px_rgba(255,45,120,0.6)]"
-          >
-            {{ countdown > 0 ? `Tunggu ${countdown} Detik...` : 'Lewati Iklan & Unduh' }}
-          </button>
+            <button
+              :disabled="countdown > 0"
+              @click="downloadImage"
+              class="w-full py-4 px-6 bg-primary rounded-lg text-on-primary font-headline font-bold uppercase tracking-wider transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary-fixed hover:shadow-[0_0_16px_rgba(255,45,120,0.6)]"
+            >
+              {{ countdown > 0 ? `Tunggu ${countdown} Detik...` : 'Lewati Iklan & Unduh' }}
+            </button>
+          </div>
         </div>
-      </div>
-    </transition>
+      </transition>
+    </Teleport>
   </main>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onUnmounted } from "vue";
+import { ref, onUnmounted } from "vue";
 import { useImageStore } from "../stores/imageStore";
 import AdsterraBanner from "./AdsterraBanner.vue";
 
 const imageStore = useImageStore();
 const showAdModal = ref(false);
 const countdown = ref(5);
-const adContainer = ref<HTMLElement | null>(null);
 
 let timerInterval: ReturnType<typeof setInterval> | null = null;
 
-const openAdModal = async () => {
+const openAdModal = () => {
   showAdModal.value = true;
   countdown.value = 5;
   
@@ -159,16 +168,6 @@ const openAdModal = async () => {
       if (timerInterval) clearInterval(timerInterval);
     }
   }, 1000);
-
-  // Inject Iklan 3 (Native Script) securely after modal DOM is mounted
-  await nextTick();
-  if (adContainer.value) {
-    adContainer.value.innerHTML = '';
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://pl30643113.effectivecpmnetwork.com/86/a9/12/86a912ebbf89badc73e903d0d182c43a.js';
-    adContainer.value.appendChild(script);
-  }
 };
 
 const downloadImage = async () => {
