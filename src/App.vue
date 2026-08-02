@@ -4,42 +4,37 @@
     <TopNavBar />
 
     <!-- State Management Container -->
-    <transition name="fade" mode="out-in">
-      <LoadingState v-if="imageStore.isGenerating" />
-      <ErrorMessage v-else-if="imageStore.error" />
-      <ResultImage v-else-if="imageStore.resultImageUrl" />
-      <PromptBox v-else />
-    </transition>
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
 
     <!-- Footer (Shared Component) -->
     <footer
       class="w-full mt-5 flex flex-col md:flex-row justify-between items-center px-8 gap-4 bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant/30 py-8 flat no shadows mt-auto relative z-10"
     >
       <!-- Brand Logo (Footer) -->
-      <div class="text-lg font-headline font-bold text-on-surface">
+      <router-link to="/" class="flex items-center gap-2 text-lg font-headline font-bold text-on-surface opacity-80 hover:opacity-100 transition-opacity">
+        <img src="/logo.png" alt="PixelForge Logo" class="w-6 h-6 object-contain" />
         PixelForge
-      </div>
+      </router-link>
       <!-- Links -->
       <div class="flex flex-wrap justify-center gap-6">
-        <a
+        <router-link
           class="font-label text-xs tracking-wider uppercase text-on-surface-variant/60 hover:text-secondary transition-colors duration-200 cursor-pointer"
-          href="#"
-          >Terms</a
+          to="/terms"
+          >Terms</router-link
         >
-        <a
+        <router-link
           class="font-label text-xs tracking-wider uppercase text-on-surface-variant/60 hover:text-secondary transition-colors duration-200 cursor-pointer"
-          href="#"
-          >Privacy</a
+          to="/privacy"
+          >Privacy</router-link
         >
-        <a
+        <router-link
           class="font-label text-xs tracking-wider uppercase text-on-surface-variant/60 hover:text-secondary transition-colors duration-200 cursor-pointer"
-          href="#"
-          >API</a
-        >
-        <a
-          class="font-label text-xs tracking-wider uppercase text-on-surface-variant/60 hover:text-secondary transition-colors duration-200 cursor-pointer"
-          href="#"
-          >Status</a
+          to="/status"
+          >Status</router-link
         >
       </div>
       <!-- Copyright -->
@@ -53,14 +48,8 @@
 </template>
 
 <script setup lang="ts">
-import { useImageStore } from "./stores/imageStore";
 import TopNavBar from "./components/TopNavBar.vue";
-import PromptBox from "./components/PromptBox.vue";
-import LoadingState from "./components/LoadingState.vue";
-import ResultImage from "./components/ResultImage.vue";
-import ErrorMessage from "./components/ErrorMessage.vue";
 
-const imageStore = useImageStore();
 const date = new Date().getFullYear();
 </script>
 

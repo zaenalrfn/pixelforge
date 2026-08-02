@@ -1,27 +1,30 @@
 export const generateImage = async (prompt: string): Promise<string> => {
-  const url = '/api';
-  const apiKey = import.meta.env.VITE_API_KEY;
-
-  if (!apiKey) {
-    throw new Error('API Key tidak ditemukan. Harap atur VITE_API_KEY di .env');
-  }
+  // Use Vercel Serverless Function in production, or fallback to vite proxy in local
+  // Since we created api/generate.ts, the frontend always calls that.
+  const url = import.meta.env.DEV ? '/api/dev-proxy' : '/api/generate';
 
   try {
-    // Assuming a standard POST request with prompt in JSON body.
-    // If the API expects query params or different structure, we might need to adjust this.
-    // The prompt is passed as { prompt: "..." }
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({ prompt }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Gagal membuat gambar: ${response.status} ${response.statusText}. ${errorText}`);
+      let errorMessage = `Gagal membuat gambar: ${response.status} ${response.statusText}`;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } else {
+        const errorText = await response.text();
+        errorMessage = `${errorMessage}. ${errorText}`;
+      }
+      
+      throw new Error(errorMessage);
     }
 
     // Assuming the API returns JSON with an imageUrl or imageBase64, or just directly an image blob.
