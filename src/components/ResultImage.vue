@@ -100,16 +100,25 @@
 
     <!-- Ad Modal Overlay -->
     <transition name="fade">
-      <div v-if="showAdModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-        <div class="bg-surface-container border border-outline-variant rounded-xl p-6 max-w-lg w-full flex flex-col items-center gap-6 relative shadow-[0_0_30px_rgba(0,0,0,0.8)]">
+      <div v-if="showAdModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+        <div class="bg-surface-container border border-outline-variant rounded-xl p-6 max-w-2xl w-full flex flex-col items-center gap-6 relative shadow-[0_0_30px_rgba(0,0,0,0.8)] my-auto">
           <header class="w-full text-center space-y-2">
             <h3 class="text-2xl font-headline font-bold text-on-surface">Dukung Kami</h3>
             <p class="text-sm text-on-surface-variant">Tautan unduhan Anda sedang disiapkan...</p>
           </header>
           
-          <!-- Ad Container -->
-          <div ref="adContainer" class="w-full min-h-[250px] bg-surface-dim rounded-lg flex items-center justify-center overflow-hidden border border-outline-variant/50 relative">
-            <span v-if="!countdown" class="absolute text-on-surface-variant/30 font-label text-xs">Memuat Iklan...</span>
+          <!-- Ad Containers Grid -->
+          <div class="w-full flex flex-wrap justify-center items-center gap-4">
+            <!-- Iklan 1: 300x250 -->
+            <AdsterraBanner adKey="1e762b0ac65e443dbd2b5e6a57cd9708" :width="300" :height="250" />
+            
+            <!-- Iklan 2: 160x300 -->
+            <AdsterraBanner adKey="7c8c1da97381ba2540a7c376eb5deec3" :width="160" :height="300" />
+          </div>
+
+          <!-- Iklan 3: Native Script -->
+          <div ref="adContainer" class="w-full min-h-[50px] bg-surface-dim rounded-lg flex items-center justify-center overflow-hidden border border-outline-variant/50 relative">
+            <span v-if="!countdown" class="absolute text-on-surface-variant/30 font-label text-xs">Memuat Iklan Tambahan...</span>
           </div>
 
           <button
@@ -128,6 +137,7 @@
 <script setup lang="ts">
 import { ref, nextTick, onUnmounted } from "vue";
 import { useImageStore } from "../stores/imageStore";
+import AdsterraBanner from "./AdsterraBanner.vue";
 
 const imageStore = useImageStore();
 const showAdModal = ref(false);
@@ -150,13 +160,13 @@ const openAdModal = async () => {
     }
   }, 1000);
 
-  // Inject Adsterra script securely after modal DOM is mounted
+  // Inject Iklan 3 (Native Script) securely after modal DOM is mounted
   await nextTick();
   if (adContainer.value) {
     adContainer.value.innerHTML = '';
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://pl30643114.effectivecpmnetwork.com/6e/87/16/6e8716ce556780652b51af6ebf4fc967.js';
+    script.src = 'https://pl30643113.effectivecpmnetwork.com/86/a9/12/86a912ebbf89badc73e903d0d182c43a.js';
     adContainer.value.appendChild(script);
   }
 };
