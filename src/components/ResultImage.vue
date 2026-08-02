@@ -58,7 +58,7 @@
           </div>
           <div class="flex flex-col gap-4 relative z-10">
             <button
-              @click="downloadImage"
+              @click="openAdModal"
               class="w-full py-4 px-6 bg-background rounded-DEFAULT neon-border-primary text-primary font-headline font-bold uppercase tracking-wider flex items-center justify-center gap-3 neon-button-glow transition-all duration-300 active:scale-95 group"
             >
               <span
@@ -97,13 +97,69 @@
         </div>
       </div>
     </section>
+
+    <!-- Ad Modal Overlay -->
+    <transition name="fade">
+      <div v-if="showAdModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="bg-surface-container border border-outline-variant rounded-xl p-6 max-w-lg w-full flex flex-col items-center gap-6 relative shadow-[0_0_30px_rgba(0,0,0,0.8)]">
+          <header class="w-full text-center space-y-2">
+            <h3 class="text-2xl font-headline font-bold text-on-surface">Dukung Kami</h3>
+            <p class="text-sm text-on-surface-variant">Tautan unduhan Anda sedang disiapkan...</p>
+          </header>
+          
+          <!-- Ad Container -->
+          <div ref="adContainer" class="w-full min-h-[250px] bg-surface-dim rounded-lg flex items-center justify-center overflow-hidden border border-outline-variant/50 relative">
+            <span v-if="!countdown" class="absolute text-on-surface-variant/30 font-label text-xs">Memuat Iklan...</span>
+          </div>
+
+          <button
+            :disabled="countdown > 0"
+            @click="downloadImage"
+            class="w-full py-4 px-6 bg-primary rounded-lg text-on-primary font-headline font-bold uppercase tracking-wider transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary-fixed hover:shadow-[0_0_16px_rgba(255,45,120,0.6)]"
+          >
+            {{ countdown > 0 ? `Tunggu ${countdown} Detik...` : 'Lewati Iklan & Unduh' }}
+          </button>
+        </div>
+      </div>
+    </transition>
   </main>
 </template>
 
 <script setup lang="ts">
+import { ref, nextTick, onUnmounted } from "vue";
 import { useImageStore } from "../stores/imageStore";
 
 const imageStore = useImageStore();
+const showAdModal = ref(false);
+const countdown = ref(5);
+const adContainer = ref<HTMLElement | null>(null);
+
+let timerInterval: ReturnType<typeof setInterval> | null = null;
+
+const openAdModal = async () => {
+  showAdModal.value = true;
+  countdown.value = 5;
+  
+  if (timerInterval) clearInterval(timerInterval);
+  
+  timerInterval = setInterval(() => {
+    if (countdown.value > 0) {
+      countdown.value--;
+    } else {
+      if (timerInterval) clearInterval(timerInterval);
+    }
+  }, 1000);
+
+  // Inject Adsterra script securely after modal DOM is mounted
+  await nextTick();
+  if (adContainer.value) {
+    adContainer.value.innerHTML = '';
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://pl30643114.effectivecpmnetwork.com/6e/87/16/6e8716ce556780652b51af6ebf4fc967.js';
+    adContainer.value.appendChild(script);
+  }
+};
 
 const downloadImage = async () => {
   if (!imageStore.resultImageUrl) return;
@@ -116,6 +172,13 @@ const downloadImage = async () => {
     document.body.removeChild(a);
   } catch (error) {
     console.error("Failed to download image:", error);
+  } finally {
+    showAdModal.value = false;
+    if (timerInterval) clearInterval(timerInterval);
   }
 };
+
+onUnmounted(() => {
+  if (timerInterval) clearInterval(timerInterval);
+});
 </script>
