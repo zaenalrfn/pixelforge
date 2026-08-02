@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Neon Tokyo Specific Utilities & Animations */
+  body {
+    background-color: #0a0a12;
+    background-image: 
+        linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: center center;
+  }
+}
+
+@layer utilities {
+  .cyber-scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(0, 0, 0, 0.25) 51%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  .neon-text-primary {
+    text-shadow: 0 0 8px currentColor;
+  }
+
+  .neon-glow-primary {
+    text-shadow: 0 0 8px currentColor;
+  }
+
+  .neon-border-primary {
+    border: 1px solid rgba(255, 45, 120, 0.5);
+    box-shadow: inset 0 0 12px rgba(255, 45, 120, 0.1);
+  }
+
+  .neon-border-secondary {
+    border: 1px solid rgba(0, 255, 204, 0.5);
+    box-shadow: inset 0 0 12px rgba(0, 255, 204, 0.1);
+  }
+
+  .neon-button-glow:hover {
+    box-shadow: 0 0 16px rgba(255, 45, 120, 0.4);
+  }
+
+  .grid-bg {
+    background-image: 
+        linear-gradient(to right, rgba(255, 45, 120, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 45, 120, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .image-frame-glow {
+    position: relative;
+  }
+  
+  .image-frame-glow::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: linear-gradient(45deg, #ff2d78, #00ffcc, #ff2d78);
+    z-index: -1;
+    filter: blur(12px);
+    opacity: 0.7;
+    border-radius: inherit;
+    animation: pulse-glow 3s infinite alternate;
+  }
+}
+
+/* Complex Geometric Loader */
+.cyber-loader {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 600px;
+}
+
+.loader-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 45, 120, 0.5); /* Primary Neon */
+    box-shadow: 0 0 16px rgba(255, 45, 120, 0.4), inset 0 0 12px rgba(255, 45, 120, 0.1);
+    animation: rotate-ring 4s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.loader-ring:nth-child(1) {
+    width: 100%;
+    height: 100%;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    animation-duration: 3s;
+    animation-direction: normal;
+}
+
+.loader-ring:nth-child(2) {
+    width: 75%;
+    height: 75%;
+    border-color: rgba(0, 255, 204, 0.5); /* Secondary Neon */
+    box-shadow: 0 0 16px rgba(0, 255, 204, 0.4), inset 0 0 12px rgba(0, 255, 204, 0.1);
+    border-top-color: transparent;
+    border-right-color: transparent;
+    animation-duration: 2.5s;
+    animation-direction: reverse;
+}
+
+.loader-ring:nth-child(3) {
+    width: 50%;
+    height: 50%;
+    border-color: rgba(255, 224, 74, 0.5); /* Tertiary Neon */
+    box-shadow: 0 0 16px rgba(255, 224, 74, 0.4), inset 0 0 12px rgba(255, 224, 74, 0.1);
+    border-bottom-color: transparent;
+    border-top-color: transparent;
+    animation-duration: 4s;
+}
+
+.loader-core {
+    width: 20%;
+    height: 20%;
+    background-color: #ff2d78;
+    border-radius: 50%;
+    box-shadow: 0 0 24px #ff2d78, 0 0 48px #ff2d78;
+    animation: pulse-core 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes rotate-ring {
+    0% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg); }
+    100% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg); }
+}
+
+@keyframes pulse-core {
+    0% { transform: scale(0.8); opacity: 0.7; }
+    100% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes pulse-glow {
+    0% { opacity: 0.5; filter: blur(10px); }
+    100% { opacity: 0.8; filter: blur(16px); }
+}
+
+.typewriter-effect {
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: .05em;
+    animation: typing 2s steps(40, end), blink-caret .75s step-end infinite;
+    border-right: 2px solid #ff2d78;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #ff2d78; }
+}
